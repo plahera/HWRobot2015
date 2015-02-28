@@ -37,13 +37,10 @@ public:
 	void DriveWithInputs(double x, double y, double turn);
 	void Stop();
 
-	void SetUsePID(bool use);
-
 	WheelSubsystem *leftWheel;
 	WheelSubsystem *rightWheel;
 	WheelSubsystem *backWheel;
 	WheelSubsystem *frontWheel;
-	bool usePid = false;
 };
 
 #endif

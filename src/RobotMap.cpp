@@ -81,9 +81,6 @@ void RobotMap::init() {
 
 	wheelSubsystemRightController = new CANTalon(0);
 
-	wheelSubsystemFrontController = new Talon(14);
-	lw->AddActuator("WheelSubsystem", "Front Controller", (Talon*) wheelSubsystemFrontController);
-
 	drivetrainGyro = new Gyro(0);
 	lw->AddSensor("Drivetrain", "Gyro", drivetrainGyro);
 	drivetrainGyro->SetSensitivity(0.007);

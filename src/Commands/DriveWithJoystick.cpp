@@ -28,7 +28,21 @@ void DriveWithJoystick::Initialize() {
 // Called repeatedly when this Command is scheduled to run
 void DriveWithJoystick::Execute() {
 	Joystick * joy = Robot::oi->getDriveJoystick();
-	Robot::drivetrain->DriveWithInputs(joy->GetX(), joy->GetY(), joy->GetTwist());
+	double throtv = 1.0-((joy->GetThrottle()+1.0)/2.0);
+	Joystick * joyr = Robot::oi->getGrabJoystick();
+	double throtr = 1.0-((joyr->GetThrottle()+1.0)/2.0);
+#if 0
+	if(joy->GetButton(3))
+	{
+		Robot::drivetrain->DriveWithInputs(0, joy->GetY()*throtv, joy->GetTwist()*throtr);
+	}
+	else if(joy->GetButton(4))
+		{
+			Robot::drivetrain->DriveWithInputs(joy->GetX()*throtv, 0, joy->GetTwist()*throtr);
+		}
+#endif
+
+	Robot::drivetrain->DriveWithInputs(joy->GetX()*throtv, joy->GetY()*throtv, joy->GetTwist()*throtr);
 }
 
 // Make this return true when this Command no longer needs to run execute()

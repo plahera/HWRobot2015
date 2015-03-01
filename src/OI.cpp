@@ -41,7 +41,7 @@ OI::OI() {
 	grabBoxButton = new JoystickButton(grabJoystick, 4);
 	grabBoxButton->WhileHeld(new GrabBox());
 	driveJoystick = new Joystick(0);
-	
+
 	toggleRelative = new JoystickButton(driveJoystick, 7);
 	toggleRelative->WhenPressed(new ToggleUseGyro());
 	drive = new JoystickButton(driveJoystick, 1);

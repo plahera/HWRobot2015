@@ -30,7 +30,7 @@ public:
 	static Encoder* boxPulleySystemBoxPulleyEncoder;
 	static SpeedController* boxPulleySystemBoxPulleyTalon;
 	static Encoder* canPulleySystemCanPulleyEncoder;
-	static SpeedController* canPulleySystemBoxPulleyTalon;
+	static SpeedController* canPulleySystemCanPulleyTalon;
 	static SpeedController* wheelSubsystemFrontController;
 	static SpeedController* wheelSubsystemRightController;
 	static SpeedController* wheelSubsystemBackController;

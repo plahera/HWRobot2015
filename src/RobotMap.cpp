@@ -18,7 +18,7 @@ Compressor* RobotMap::boxGrabberCompressor = NULL;
 Encoder* RobotMap::boxPulleySystemBoxPulleyEncoder = NULL;
 SpeedController* RobotMap::boxPulleySystemBoxPulleyTalon = NULL;
 Encoder* RobotMap::canPulleySystemCanPulleyEncoder = NULL;
-SpeedController* RobotMap::canPulleySystemBoxPulleyTalon = NULL;
+SpeedController* RobotMap::canPulleySystemCanPulleyTalon = NULL;
 SpeedController* RobotMap::wheelSubsystemFrontController = NULL;
 SpeedController* RobotMap::wheelSubsystemRightController = NULL;
 SpeedController* RobotMap::wheelSubsystemBackController = NULL;
@@ -51,8 +51,8 @@ void RobotMap::init() {
 	lw->AddSensor("CanPulleySystem", "CanPulleyEncoder", canPulleySystemCanPulleyEncoder);
 	canPulleySystemCanPulleyEncoder->SetDistancePerPulse(1.0);
         canPulleySystemCanPulleyEncoder->SetPIDSourceParameter(Encoder::kRate);
-	canPulleySystemBoxPulleyTalon = new Talon(3);
-	lw->AddActuator("CanPulleySystem", "BoxPulleyTalon", (Talon*) canPulleySystemBoxPulleyTalon);
+	canPulleySystemCanPulleyTalon = new Talon(3);
+	lw->AddActuator("CanPulleySystem", "CanPulleyTalon", (Talon*) canPulleySystemCanPulleyTalon);
 	
 	wheelSubsystemFrontController = new Talon(14);
 	lw->AddActuator("WheelSubsystem", "Front Controller", (Talon*) wheelSubsystemFrontController);
@@ -89,7 +89,7 @@ void RobotMap::init() {
 
 	boxPulleySystemBoxPulleyTalon = new CANTalon(3);
 
-	canPulleySystemBoxPulleyTalon = new CANTalon(12);
+	canPulleySystemCanPulleyTalon = new CANTalon(12);
 
 #if 0
 	drivetrainFrontEncoder->SetDistancePerPulse(1.0);

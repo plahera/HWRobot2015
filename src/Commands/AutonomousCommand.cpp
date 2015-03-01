@@ -11,6 +11,36 @@
 
 #include "AutonomousCommand.h"
 
+//General options
+//#define DISABLE_AUTO //   Disable autonomous completely
+//#define USE_SLOWDOWN //   Slow down smoothly
+#define HAS_GAME_PIECE // If we push an object enable this
+
+//#define USE_SLOWDOWN
+#ifdef USE_SLOWDOWN
+#define SLOWDOWN_TIME 3.0
+#endif
+
+#define MAX_DRIVE_TIME 5.0
+#ifdef HAS_GAME_PIECE
+#define MAX_SPEED -0.80
+#else
+#define MAX_SPEED -0.65
+#endif
+
+#ifndef DISABLE_AUTO
+#define ENABLE_AUTONOMOUS
+#endif
+
+#define CLOSE_ON_START false
+#define CLOSE_ON_END   false
+
+//#define USE_LIFT 1
+#ifdef USE_LIFT
+#define START_LIFT_TIME 1.0
+#define STOP_LIFT_TIME 10.0
+#endif
+
 AutonomousCommand::AutonomousCommand() {
 	// Use requires() here to declare subsystem dependencies
 	// eg. requires(chassis);
@@ -24,28 +54,75 @@ using namespace std::chrono;
 // Called just before this Command runs the first time
 void AutonomousCommand::Initialize() {
 	tstart = high_resolution_clock::now();
-	Robot::boxGrabber->SetClosed(false);
+#ifdef CLOSE_ON_START
+	Robot::boxGrabber->SetClosed(CLOSE_ON_START);
+#endif
 }
 
 // Called repeatedly when this Command is scheduled to run
+
+//Move forward MAX_TIME
+//While still moving forward, after START_LIFT_TIME start lifting until the STOP_LIFT_TIME
 void AutonomousCommand::Execute() {
-	Robot::drivetrain->DriveWithInputs(0, 0.5, 0);
+#ifdef ENABLE_AUTONOMOUS
+	double speed = MAX_SPEED;
+
+	double currtime;
+	{
+		high_resolution_clock::time_point t2 = high_resolution_clock::now();
+		duration<double> time_span = duration_cast<duration<double>>(t2 - tstart);
+		currtime = time_span.count();
+	}
+
+#ifdef USE_SLOWDOWN
+	if(currtime > (MAX_TIME-SLOWDOWN_TIME)){
+		speed *= (currtime-(MAX_TIME-SLOWDOWN_TIME))/SLOWDOWN_TIME;
+	}
+//#endif
+#endif
+
+	Robot::drivetrain->DriveWithInputs(0, currtime >= MAX_DRIVE_TIME ? 0 : speed, 0);
+
+#ifdef USE_LIFT
+	if(currtime >= START_LIFT_TIME && currtime <= STOP_LIFT_TIME)
+	{
+		Robot::boxPulleySystem->MovePulleyWithInput(.3);
+	}
+	if (currtime>STOP_LIFT_TIME)
+	{
+		Robot::boxPulleySystem->MovePulleyWithInput(0);
+	}
+	Robot::boxGrabber->SetClosed(true);
+#endif
+
+#endif
 }
 
 // Make this return true when this Command no longer needs to run execute()
 bool AutonomousCommand::IsFinished() {
+#ifdef DISABLE_AUTO
+	return true;
+#else
 	high_resolution_clock::time_point t2 = high_resolution_clock::now();
 	duration<double> time_span = duration_cast<duration<double>>(t2 - tstart);
-	return time_span.count() > 2;
+#ifdef STOP_LIFT_TIME
+	return time_span.count() > std::max(MAX_DRIVE_TIME, STOP_LIFT_TIME);
+#else
+	return time_span.count() > MAX_DRIVE_TIME;
+#endif
+#endif
 }
 
 // Called once after isFinished returns true
 void AutonomousCommand::End() {
-	Robot::drivetrain->DriveWithInputs(0, 0, 0);
+	Robot::drivetrain->Stop();
+#ifdef CLOSE_ON_END
+	Robot::boxGrabber->SetClosed(CLOSE_ON_END);
+#endif
 }
 
 // Called when another command which requires one or more of the same
 // subsystems is scheduled to run
 void AutonomousCommand::Interrupted() {
-	Robot::drivetrain->DriveWithInputs(0, 0, 0);
+	Robot::drivetrain->Stop();
 }

@@ -29,7 +29,7 @@ void MoveBoxPulleyCommand::Initialize() {
 // Called repeatedly when this Command is scheduled to run
 void MoveBoxPulleyCommand::Execute() {
 	Joystick * joy = Robot::oi->getGrabJoystick();
-		Robot::boxPulleySystem->MovePulleyWithInput(joy->GetY());
+	Robot::boxPulleySystem->MovePulleyWithInput(joy->GetY());
 }
 
 // Make this return true when this Command no longer needs to run execute()

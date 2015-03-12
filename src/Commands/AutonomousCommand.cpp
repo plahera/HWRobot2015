@@ -14,14 +14,15 @@
 //General options
 //#define DISABLE_AUTO //   Disable autonomous completely
 //#define USE_SLOWDOWN //   Slow down smoothly
-#define HAS_GAME_PIECE // If we push an object enable this
+//#define HAS_GAME_PIECE // If we push an object enable this
 
 //#define USE_SLOWDOWN
 #ifdef USE_SLOWDOWN
 #define SLOWDOWN_TIME 3.0
 #endif
 
-#define MAX_DRIVE_TIME 5.0
+#define START_DRIVE_TIME 5.0
+#define MAX_DRIVE_TIME 10.0
 #ifdef HAS_GAME_PIECE
 #define MAX_SPEED -0.80
 #else
@@ -32,13 +33,13 @@
 #define ENABLE_AUTONOMOUS
 #endif
 
-#define CLOSE_ON_START false
-#define CLOSE_ON_END   false
+#define CLOSE_ON_START true
+#define CLOSE_ON_END   true
 
-//#define USE_LIFT 1
+#define USE_LIFT 1
 #ifdef USE_LIFT
-#define START_LIFT_TIME 1.0
-#define STOP_LIFT_TIME 10.0
+#define START_LIFT_TIME 0.0
+#define STOP_LIFT_TIME 5.0
 #endif
 
 AutonomousCommand::AutonomousCommand() {
@@ -81,18 +82,19 @@ void AutonomousCommand::Execute() {
 //#endif
 #endif
 
-	Robot::drivetrain->DriveWithInputs(0, currtime >= MAX_DRIVE_TIME ? 0 : speed, 0);
+	if(currtime > START_DRIVE_TIME){
+		Robot::drivetrain->DriveWithInputs(0, currtime >= MAX_DRIVE_TIME ? 0 : speed, 0);
+	}
 
 #ifdef USE_LIFT
 	if(currtime >= START_LIFT_TIME && currtime <= STOP_LIFT_TIME)
 	{
-		Robot::boxPulleySystem->MovePulleyWithInput(.3);
+		Robot::canPulleySystem->MovePulleyWithInput(-1.0);
 	}
-	if (currtime>STOP_LIFT_TIME)
+	else
 	{
-		Robot::boxPulleySystem->MovePulleyWithInput(0);
+		Robot::canPulleySystem->MovePulleyWithInput(0);
 	}
-	Robot::boxGrabber->SetClosed(true);
 #endif
 
 #endif
